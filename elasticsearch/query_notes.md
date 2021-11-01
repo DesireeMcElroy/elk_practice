@@ -178,4 +178,51 @@ POST /products/_update/100
   }
 }
 ```
+## Upserts
+Upsert - conditionally update a document based off whether the document exists.
 
+```
+POST /products/_update/101
+{
+  "script": {
+    "source": "ctx._source.in_stock++"
+  },
+  "upsert": {
+    "name": "Blender",
+    "price": 399,
+    "in_stock": 5
+  }
+}
+```
+## Replacing documents
+Just replace field you want to change with new quantity.
+```
+PUT /products/_doc/100
+{
+  "name": "Toaster",
+  "price": 79,
+  "in_stock": 4
+}
+```
+## Deleting documents
+
+```
+DELETE /products/_doc/101
+```
+
+# Optimistic concurrency control
+
+## Retrieve the document (to obtain its primary term and sequence number)
+```
+GET /products/_doc/100
+```
+
+## Update the `in_stock` field only if the document has not been updated since retrieving it
+```
+POST /products/_update/100?if_primary_term=X&if_seq_no=X
+{
+  "doc": {
+    "in_stock": 123
+  }
+}
+```
