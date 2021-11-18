@@ -1,6 +1,6 @@
-## **Mother queries for Elasticsearch**
+# **Mother queries for Elasticsearch**
 ----------
-## Run Elasticsearch/Kibana
+# Run Elasticsearch/Kibana
 ```
 $ bin/elasticsearch
 $ curl http://localhost:9200
@@ -10,8 +10,7 @@ $ bin/kibana
 - localhost:9200 (Elasticsearch)
 - localhost:5601 (Kibana)
 
-## Getting Started
-
+# Getting Started
 
 Check Cluster health.
 ```
@@ -29,7 +28,7 @@ List shards within cluster.
 GET /_cat/shards?v
 ```
 
-## Create/Deleting Indices
+# Create/Deleting Indices
 Create new index named pages
 ```
 PUT /pages
@@ -49,7 +48,7 @@ PUT /products
   }
 }
 ```
-## Indexing Documents
+# Indexing Documents
 Add document
 ```
 POST /products/_doc
@@ -92,7 +91,7 @@ POST /products/_update/100
 ```
 Can also do both adding/updating in one since a field that does not exist is automatically added.
 
-## Scripted Updates
+# Scripted Updates
 
 ## Reducing the current value of `in_stock` by one
 
@@ -299,3 +298,46 @@ POST /products/_delete_by_query
   }
 }
 ```
+
+# Batch processing
+- Update many documents at once with single query.
+
+## Indexing documents
+
+```
+POST /_bulk
+{ "index": { "_index": "products", "_id": 200 } }
+{ "name": "Espresso Machine", "price": 199, "in_stock": 5 }
+{ "create": { "_index": "products", "_id": 201 } }
+{ "name": "Milk Frother", "price": 149, "in_stock": 14 }
+```
+
+## Updating and deleting documents
+
+```
+POST /_bulk
+{ "update": { "_index": "products", "_id": 201 } }
+{ "doc": { "price": 129 } }
+{ "delete": { "_index": "products", "_id": 200 } }
+```
+
+## Specifying the index name in the request path
+
+```
+POST /products/_bulk
+{ "update": { "_id": 201 } }
+{ "doc": { "price": 129 } }
+{ "delete": { "_id": 200 } }
+```
+
+## Retrieving all documents
+
+```
+GET /products/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+```
+
